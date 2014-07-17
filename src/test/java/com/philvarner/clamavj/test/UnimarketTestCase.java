@@ -19,7 +19,8 @@ import java.util.concurrent.Executors;
 public class UnimarketTestCase {
     private static ClamScan scanner = new ClamScan("localhost", 3310, 60000);
     private static ExecutorService executorService = Executors.newCachedThreadPool();
-    private File file = new File("src/test/resources/eicar.txt");
+//    private File file = new File("src/test/resources/eicar.txt");
+    private File file = new File("src/test/resources/4.1.0_14660.zip");
 
     @BeforeClass
     public static void beforeClass() {
