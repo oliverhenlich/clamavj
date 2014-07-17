@@ -2,6 +2,8 @@ package com.philvarner.clamavj.test;
 
 import com.philvarner.clamavj.ClamScan;
 import com.philvarner.clamavj.unimarket.DefaultVirusScanner;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,8 +21,19 @@ public class UnimarketTestCase {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
     private File file = new File("src/test/resources/eicar.txt");
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.out.println("-------------------------------------");
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        System.out.println("-------------------------------------");
+    }
+
     @Test
     public void testWithDaemon() throws FileNotFoundException {
+        System.out.println("Scanning with clamd " + file);
         long start = System.currentTimeMillis();
 
 
@@ -35,6 +48,7 @@ public class UnimarketTestCase {
 
     @Test
     public void testWithExec() throws IOException {
+        System.out.println("Scanning with exec " + file);
         long start = System.currentTimeMillis();
 
 
