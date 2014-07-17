@@ -240,7 +240,7 @@ public class ClamScan {
             }
         }
 
-        if (log.isDebugEnabled()) log.debug("Response: " + response);
+        System.out.println("Response: " + response);
 
         return new ScanResult(response.trim());
     }
