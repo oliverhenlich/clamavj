@@ -1,6 +1,7 @@
 package com.philvarner.clamavj.test;
 
 import com.philvarner.clamavj.ClamScan;
+import com.philvarner.clamavj.ScanResult;
 import com.philvarner.clamavj.unimarket.DefaultVirusScanner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,12 +39,11 @@ public class UnimarketTestCase {
         long start = System.currentTimeMillis();
 
 
-        scanner.scan(new FileInputStream(file));
-
+        ScanResult scan = scanner.scan(new FileInputStream(file));
 
         long end = System.currentTimeMillis();
         System.out.println("time = " + (end - start));
-
+        System.out.println("scan.getStatus() = " + scan.getStatus());
     }
 
 
@@ -54,10 +54,11 @@ public class UnimarketTestCase {
 
 
         DefaultVirusScanner s = new DefaultVirusScanner(file, true, executorService);
-        s.scan();
+        boolean scan = s.scan();
 
 
         long end = System.currentTimeMillis();
         System.out.println("time = " + (end - start));
+        System.out.println("scan = " + scan);
     }
 }
