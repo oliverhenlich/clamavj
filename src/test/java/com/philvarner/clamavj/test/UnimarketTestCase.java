@@ -89,7 +89,7 @@ public class UnimarketTestCase {
         }
         System.out.println("results = " + results);
 
-        fixedThreadPool.awaitTermination(60, TimeUnit.SECONDS);
+        fixedThreadPool.awaitTermination(30, TimeUnit.SECONDS);
 
         System.out.println("results = " + results);
         for (Map.Entry<File, Future> entry : results.entrySet()) {
