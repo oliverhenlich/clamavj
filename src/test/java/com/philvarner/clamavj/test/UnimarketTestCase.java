@@ -74,28 +74,29 @@ public class UnimarketTestCase {
         long start = System.currentTimeMillis();
 
 
-        Map<File, Future> results = new HashMap();
+        Map<Future, File> results = new HashMap();
         for (int i = 0; i < 100; i++) {
             final File file = i % 2 == 0 ? good : bad;
             System.out.println("adding " + file);
-            results.put(file,
+            results.put(
                     fixedThreadPool.submit(new Callable<ScanResult>() {
                         @Override
                         public ScanResult call() throws Exception {
                             return scanner.scan(new FileInputStream(file));
                         }
 
-                    }));
+                    }),
+                    file);
         }
         System.out.println("results = " + results);
 
         fixedThreadPool.awaitTermination(30, TimeUnit.SECONDS);
 
         System.out.println("results = " + results);
-        for (Map.Entry<File, Future> entry : results.entrySet()) {
-            File file = entry.getKey();
+        for (Map.Entry<Future, File> entry : results.entrySet()) {
+            File file = entry.getValue();
             ScanResult.Status expected = file.getName().endsWith("bad") ? ScanResult.Status.FAILED : ScanResult.Status.PASSED;
-            ScanResult.Status actual = ((ScanResult) entry.getValue().get()).getStatus();
+            ScanResult.Status actual = ((ScanResult) entry.getKey().get()).getStatus();
             System.out.println("file = " + file);
             System.out.println("expected = " + expected);
             System.out.println("actual = " + actual);
