@@ -75,9 +75,8 @@ public class UnimarketTestCase {
 
 
         Map<Future, File> results = new HashMap();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             final File file = i % 2 == 0 ? good : bad;
-            System.out.println("adding " + file);
             results.put(
                     fixedThreadPool.submit(new Callable<ScanResult>() {
                         @Override
@@ -97,9 +96,6 @@ public class UnimarketTestCase {
             File file = entry.getValue();
             ScanResult.Status expected = file.getName().endsWith("bad") ? ScanResult.Status.FAILED : ScanResult.Status.PASSED;
             ScanResult.Status actual = ((ScanResult) entry.getKey().get()).getStatus();
-            System.out.println("file = " + file);
-            System.out.println("expected = " + expected);
-            System.out.println("actual = " + actual);
             Assert.assertEquals(expected, actual);
         }
 
