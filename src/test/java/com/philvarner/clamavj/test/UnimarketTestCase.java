@@ -90,6 +90,7 @@ public class UnimarketTestCase {
 
         fixedThreadPool.awaitTermination(60, TimeUnit.SECONDS);
 
+        System.out.println("results = " + results);
         for (Map.Entry<File, Future> entry : results.entrySet()) {
             File file = entry.getKey();
             ScanResult.Status expected = file.getName().endsWith("bad") ? ScanResult.Status.FAILED : ScanResult.Status.PASSED;
