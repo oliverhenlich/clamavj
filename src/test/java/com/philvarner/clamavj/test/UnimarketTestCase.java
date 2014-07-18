@@ -77,7 +77,7 @@ public class UnimarketTestCase {
         Map<File, Future> results = new HashMap();
         for (int i = 0; i < 100; i++) {
             final File file = i % 2 == 0 ? good : bad;
-
+            System.out.println("adding " + file);
             results.put(file,
                     fixedThreadPool.submit(new Callable<ScanResult>() {
                         @Override
@@ -87,6 +87,7 @@ public class UnimarketTestCase {
 
                     }));
         }
+        System.out.println("results = " + results);
 
         fixedThreadPool.awaitTermination(60, TimeUnit.SECONDS);
 
