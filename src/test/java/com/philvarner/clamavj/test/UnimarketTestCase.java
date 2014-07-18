@@ -24,8 +24,8 @@ public class UnimarketTestCase {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
     private static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
-    private File bad = new File("src/test/resources/eicar.txt");
-    private File good = new File("src/test/resources/binaryfile");
+    private File bad = new File("src/test/resources/bad");
+    private File good = new File("src/test/resources/good");
 
 //    private File file = new File("src/test/resources/binaryfilevirus");
 
