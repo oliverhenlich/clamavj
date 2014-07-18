@@ -3,6 +3,7 @@ package com.philvarner.clamavj.test;
 import com.philvarner.clamavj.ClamScan;
 import com.philvarner.clamavj.ScanResult;
 import com.philvarner.clamavj.unimarket.DefaultVirusScanner;
+import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,8 +12,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * @author oliver.henlich
@@ -20,7 +22,11 @@ import java.util.concurrent.Executors;
 public class UnimarketTestCase {
     private static ClamScan scanner = new ClamScan("localhost", 3310, 60000);
     private static ExecutorService executorService = Executors.newCachedThreadPool();
-    private File file = new File("src/test/resources/eicar.txt");
+    private static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+
+    private File bad = new File("src/test/resources/eicar.txt");
+    private File good = new File("src/test/resources/binaryfile");
+
 //    private File file = new File("src/test/resources/binaryfilevirus");
 
     @BeforeClass
@@ -35,11 +41,11 @@ public class UnimarketTestCase {
 
     @Test
     public void testWithDaemon() throws FileNotFoundException {
-        System.out.println("Scanning with clamd " + file);
+        System.out.println("Scanning with clamd " + bad);
         long start = System.currentTimeMillis();
 
 
-        ScanResult scan = scanner.scan(new FileInputStream(file));
+        ScanResult scan = scanner.scan(new FileInputStream(bad));
 
         long end = System.currentTimeMillis();
         System.out.println("time = " + (end - start));
@@ -49,11 +55,11 @@ public class UnimarketTestCase {
 
     @Test
     public void testWithExec() throws IOException {
-        System.out.println("Scanning with exec " + file);
+        System.out.println("Scanning with exec " + bad);
         long start = System.currentTimeMillis();
 
 
-        DefaultVirusScanner s = new DefaultVirusScanner(file, true, executorService);
+        DefaultVirusScanner s = new DefaultVirusScanner(bad, true, executorService);
         boolean scan = s.scan();
 
 
@@ -61,4 +67,41 @@ public class UnimarketTestCase {
         System.out.println("time = " + (end - start));
         System.out.println("scan = " + scan);
     }
+
+
+    @Test
+    public void testWithDaemonMultipleThreads() throws FileNotFoundException, InterruptedException, ExecutionException {
+        long start = System.currentTimeMillis();
+
+
+        Map<File, Future> results = new HashMap();
+        for (int i = 0; i < 100; i++) {
+            final File file = i % 2 == 0 ? good : bad;
+
+            results.put(file,
+                    fixedThreadPool.submit(new Callable<ScanResult>() {
+                        @Override
+                        public ScanResult call() throws Exception {
+                            return scanner.scan(new FileInputStream(file));
+                        }
+
+                    }));
+        }
+
+        fixedThreadPool.awaitTermination(60, TimeUnit.SECONDS);
+
+        for (Map.Entry<File, Future> entry : results.entrySet()) {
+            File file = entry.getKey();
+            ScanResult.Status expected = file.getName().endsWith("bad") ? ScanResult.Status.FAILED : ScanResult.Status.PASSED;
+
+            Assert.assertEquals(expected, ((ScanResult)entry.getValue().get()).getStatus());
+        }
+
+
+
+        long end = System.currentTimeMillis();
+        System.out.println("time = "+(end-start));
+    }
+
+
 }
