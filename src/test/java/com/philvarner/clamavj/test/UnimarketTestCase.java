@@ -89,7 +89,7 @@ public class UnimarketTestCase {
                     file);
         }
         System.out.println("results = " + results);
-
+        fixedThreadPool.shutdown();
         fixedThreadPool.awaitTermination(30, TimeUnit.SECONDS);
 
         System.out.println("results = " + results);
