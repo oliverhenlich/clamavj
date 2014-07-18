@@ -93,8 +93,11 @@ public class UnimarketTestCase {
         for (Map.Entry<File, Future> entry : results.entrySet()) {
             File file = entry.getKey();
             ScanResult.Status expected = file.getName().endsWith("bad") ? ScanResult.Status.FAILED : ScanResult.Status.PASSED;
-
-            Assert.assertEquals(expected, ((ScanResult)entry.getValue().get()).getStatus());
+            ScanResult.Status actual = ((ScanResult) entry.getValue().get()).getStatus();
+            System.out.println("file = " + file);
+            System.out.println("expected = " + expected);
+            System.out.println("actual = " + actual);
+            Assert.assertEquals(expected, actual);
         }
 
 
